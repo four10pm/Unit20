@@ -32,7 +32,6 @@ async function getEvents() {
     catch (error) {
         console.log(error.message);
     }
-
 };
 
 // date and time //
@@ -49,11 +48,11 @@ function renderEvents() {
 
     const eventsData = state.events.map((event) => {
         const date = event.date.split("T")[0];
-        const time = event.date.split("T")[1].split(".")[0];
+        const time = event.date.split("T")[1].split(":")[0]+":"+event.date.split("T")[1].split(":")[0];
         const element = document.createElement("li");
         element.innerHTML = 
             `<h3> ${event.name} </h3>
-            <h4> ${date} ${time} </h4>
+            <h4> ${date} at ${time} </h4>
             <h5> ${event.location} </h5>
             <p> ${event.description} </p>
             <button class="delete" id=${event.id}> DELETE </button> ` ;
