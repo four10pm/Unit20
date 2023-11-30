@@ -13,17 +13,12 @@ const state = {
 
 // references pointing to my HTML // 
 const eventsList = document.querySelector("#eventsList");
+const eventsForm = document.querySelector("form");
+const addButton = document.querySelector("#addButton");
 const deleteButton = document.querySelector(".delete");
 
-// initial render - run the functions to get & display API info // 
-async function render() {
-    await getEvents(); 
-    renderEvents();
-}
-render (); 
-
 // get info from API //
-async function getEvents() {
+const getEvents = async () => {
     try {
         const response = await fetch(API);
         const json = await response.json();
@@ -34,10 +29,60 @@ async function getEvents() {
     }
 };
 
-// date and time //
+// add info to API // 
+const createEvent = async (e) => {
+    e.preventDefault();
+    const dateControl = `${eventsForm.eventDate.value}:00Z`;
+    const createdEvent = {
+        name: eventsForm.eventName.value,
+                date: dateControl,
+                location: eventsForm.eventLocation.value,
+                description: eventsForm.eventDescription.value,
+    }
+    console.log(createdEvent);
+    try {
+        const response = await fetch(API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: eventsForm.eventName.value,
+                date: dateControl,
+                location: eventsForm.eventLocation.value,
+                description: eventsForm.eventDescription.value,
+            }),
+        });
+        const newEvent = await response.json();
+        console.log(newEvent);
+        if (!response.ok) {
+            throw new Error("Failed to create event");
+          };
+          renderEvents();
+    }
+    catch (error) {
+        console.log(error.message);
+    }
+}
+//addButton event listener//
+eventsForm.addEventListener("submit",createEvent);
+
+// delete info // 
+// const deleteEvent = async (id) => {
+//     try {
+//         const response = await fetch(API+"/"+id, {
+//             method: "DELETE",
+//         })
+//     }
+//     catch (error) {
+//         console.log(error.message);
+//     }
+// }
+//deleteButton event listener//
+deleteButton.addEventListener("click", deleteEvent);
 
 // display API info // 
-function renderEvents() { 
+const renderEvents = () => { 
     if (state.events.length === 0) {
         const element = document.createElement("li");
         element.innerHTML = `Sorry, there are no parties planned.`
@@ -61,7 +106,13 @@ function renderEvents() {
         element.style.padding = "3px";
         return element;
     });
+    eventsList.classList.add("hi");
     eventsList.replaceChildren(...eventsData);
 };
 
-
+// initial render - run the functions to get & display API info // 
+const init = async () => {
+    await getEvents(); 
+    renderEvents();
+};
+init(); 
