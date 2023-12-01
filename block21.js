@@ -33,10 +33,9 @@ const getEvents = async () => {
 const createEvent = async (e) => {
     e.preventDefault();
     const dateControl = `${eventsForm.eventDate.value}:00Z`;
-    const dateControl2 = eventsForm.eventDate.toISOstring(value); 
     const createdEvent = {
         name: eventsForm.eventName.value,
-        date: dateControl2,
+        date: dateControl,
         location: eventsForm.eventLocation.value,
         description: eventsForm.eventDescription.value,
     }
