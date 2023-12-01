@@ -48,7 +48,7 @@ const createEvent = async (e) => {
             },
             body: JSON.stringify({
                 name: eventsForm.eventName.value,
-                date: dateControl,
+                date: new Date(eventsForm.eventDate.value).toISOString(),
                 location: eventsForm.eventLocation.value,
                 description: eventsForm.eventDescription.value,
             }),
