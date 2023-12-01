@@ -33,11 +33,12 @@ const getEvents = async () => {
 const createEvent = async (e) => {
     e.preventDefault();
     const dateControl = `${eventsForm.eventDate.value}:00Z`;
+    const dateControl2 = eventsForm.eventDate.toISOstring(value); 
     const createdEvent = {
         name: eventsForm.eventName.value,
-                date: dateControl,
-                location: eventsForm.eventLocation.value,
-                description: eventsForm.eventDescription.value,
+        date: dateControl2,
+        location: eventsForm.eventLocation.value,
+        description: eventsForm.eventDescription.value,
     }
     console.log(createdEvent);
     try {
@@ -57,32 +58,33 @@ const createEvent = async (e) => {
         console.log(newEvent);
         if (!response.ok) {
             throw new Error("Failed to create event");
-          };
-          renderEvents();
+        };
+        init();
+    }
+    catch (error) {
+        console.log(error.message);
+    }
+};
+
+//addButton event listener//
+eventsForm.addEventListener("submit", createEvent);
+
+// delete info // 
+const deleteEvent = async (id) => {
+    try {
+        const response = await fetch(`${API}/${id}`, {
+            method: "DELETE",
+        });
+        console.log(response);
+        init();
     }
     catch (error) {
         console.log(error.message);
     }
 }
-//addButton event listener//
-eventsForm.addEventListener("submit",createEvent);
-
-// delete info // 
-// const deleteEvent = async (id) => {
-//     try {
-//         const response = await fetch(API+"/"+id, {
-//             method: "DELETE",
-//         })
-//     }
-//     catch (error) {
-//         console.log(error.message);
-//     }
-// }
-//deleteButton event listener//
-deleteButton.addEventListener("click", deleteEvent);
 
 // display API info // 
-const renderEvents = () => { 
+const renderEvents = () => {
     if (state.events.length === 0) {
         const element = document.createElement("li");
         element.innerHTML = `Sorry, there are no parties planned.`
@@ -93,26 +95,30 @@ const renderEvents = () => {
 
     const eventsData = state.events.map((event) => {
         const date = event.date.split("T")[0];
-        const time = event.date.split("T")[1].split(":")[0]+":"+event.date.split("T")[1].split(":")[0];
+        const time = event.date.split("T")[1].split(":")[0] + ":" + event.date.split("T")[1].split(":")[0];
         const element = document.createElement("li");
-        element.innerHTML = 
+        element.innerHTML =
             `<h3> ${event.name} </h3>
             <h4> ${date} at ${time} </h4>
             <h5> ${event.location} </h5>
             <p> ${event.description} </p>
-            <button class="delete" id=${event.id}> DELETE </button> ` ;
+            `;
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "DELETE";
+        element.append(deleteButton);
+        deleteButton.addEventListener("click", () => deleteEvent(event.id));
         element.style.border = "black 1px solid";
         element.style.listStyle = "none";
         element.style.padding = "3px";
         return element;
     });
-    eventsList.classList.add("hi");
+
     eventsList.replaceChildren(...eventsData);
 };
 
 // initial render - run the functions to get & display API info // 
 const init = async () => {
-    await getEvents(); 
+    await getEvents();
     renderEvents();
 };
 init(); 
